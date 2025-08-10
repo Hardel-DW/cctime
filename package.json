@@ -1,0 +1,45 @@
+{
+    "name": "cctime",
+    "type": "module",
+    "version": "1.0.0",
+    "description": "Claude Code conversation time tracker - Simple CLI to display daily conversation statistics",
+    "author": "Hardel",
+    "license": "MIT",
+    "exports": {
+        ".": "./dist/index.js"
+    },
+    "main": "./dist/index.js",
+    "module": "./dist/index.js",
+    "types": "./dist/index.d.ts",
+    "bin": "./dist/index.js",
+    "files": [
+        "dist"
+    ],
+    "engines": {
+        "node": ">=20.19.3"
+    },
+    "scripts": {
+        "build": "tsdown",
+        "start": "tsx ./src/index.ts",
+        "dev": "pnpm run start",
+        "test": "vitest",
+        "typecheck": "tsc --noEmit"
+    },
+    "dependencies": {
+        "cli-table3": "^0.6.5",
+        "path-type": "^6.0.0",
+        "picocolors": "^1.1.1",
+        "pretty-ms": "^9.2.0",
+        "tinyglobby": "^0.2.14",
+        "xdg-basedir": "^5.1.0",
+        "zod": "^3.25.76"
+    },
+    "devDependencies": {
+        "@types/node": "^22.10.2",
+        "fs-fixture": "^2.8.1",
+        "tsdown": "^0.13.5",
+        "tsx": "^4.19.2",
+        "typescript": "^5.9.2",
+        "vitest": "^3.2.4"
+    }
+}

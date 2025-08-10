@@ -1,0 +1,4 @@
+{"timestamp":"2024-12-08T09:15:00Z","message":{"usage":{"input_tokens":100,"output_tokens":50},"role":"user","content":[{"type":"text","text":"Hello, I need help with my TypeScript project"}]},"costUSD":0.001}
+{"timestamp":"2024-12-08T09:16:30Z","message":{"usage":{"input_tokens":150,"output_tokens":200},"role":"assistant","content":[{"type":"text","text":"I'd be happy to help you with your TypeScript project. What specific issue are you facing?"}]},"costUSD":0.002}
+{"timestamp":"2024-12-08T10:30:00Z","message":{"usage":{"input_tokens":200,"output_tokens":150},"role":"user","content":[{"type":"text","text":"I'm having trouble with type definitions"}]},"costUSD":0.003}
+{"timestamp":"2024-12-08T10:32:15Z","message":{"usage":{"input_tokens":300,"output_tokens":400},"role":"assistant","content":[{"type":"text","text":"Here are some solutions for common TypeScript type definition issues..."}]},"costUSD":0.005}
