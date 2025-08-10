@@ -1,44 +1,19 @@
-/**
- * @fileoverview Data loading utilities for Claude Code conversation analysis
- * Inspired by ccusage data-loader.ts
- */
+
 
 import { readFile } from 'node:fs/promises';
 import path from 'node:path';
 import process from 'node:process';
 import { isDirectorySync } from 'path-type';
 import { glob } from 'tinyglobby';
-import type {
-    UsageData,
-    DailyConversation,
-    LoadOptions,
-    ISOTimestamp,
-    DailyDate,
-    SessionId
-} from './types.ts';
-import {
-    usageDataSchema,
-    createDailyDate,
-    createISOTimestamp,
-    createSessionId
-} from './types.ts';
-import {
-    CLAUDE_CONFIG_DIR_ENV,
-    CLAUDE_PROJECTS_DIR_NAME,
-    DEFAULT_CLAUDE_CONFIG_PATH,
-    DEFAULT_CLAUDE_CODE_PATH,
-    USAGE_DATA_GLOB_PATTERNS,
-} from './constants.ts';
+import type { UsageData, DailyConversation, LoadOptions, ISOTimestamp, DailyDate, SessionId } from './types.ts';
+import { usageDataSchema, createDailyDate, createSessionId } from './types.ts';
+import { CLAUDE_CONFIG_DIR_ENV, DEFAULT_CLAUDE_CONFIG_PATH, DEFAULT_CLAUDE_CODE_PATH } from './constants.ts';
 
-/**
- * Get Claude data directories to search for usage data
- * Updated to not require projects/ subdirectory (like claude-code-templates)
- */
+
 export function getClaudePaths(): string[] {
     const paths = [];
     const normalizedPaths = new Set<string>();
 
-    // Check environment variable first
     const envPaths = (process.env[CLAUDE_CONFIG_DIR_ENV] ?? '').trim();
     if (envPaths !== '') {
         const envPathList = envPaths.split(',').map(p => p.trim()).filter(p => p !== '');
@@ -273,31 +248,8 @@ function calculateConversationTime(entries: Array<{ timestamp: ISOTimestamp }>, 
     return `${hours}h ${minutes}m`;
 }
 
-/**
- * Filter entries by date range
- */
-function filterByDateRange(entries: UsageData[], since?: string, until?: string): UsageData[] {
-    if (!since && !until) {
-        return entries;
-    }
-
-    return entries.filter(entry => {
-        const dateStr = formatDate(entry.timestamp).replace(/-/g, ''); // Convert to YYYYMMDD
-        if (since && dateStr < since) {
-            return false;
-        }
-        if (until && dateStr > until) {
-            return false;
-        }
-        return true;
-    });
-}
-
-/**
- * Load daily conversation data from Claude usage files
- */
 export async function loadDailyConversationData(options?: LoadOptions & { debug?: boolean }): Promise<DailyConversation[]> {
-    // Get Claude paths
+
     const claudePaths = options?.claudePath ? [options.claudePath] : getClaudePaths();
     if (claudePaths.length === 0) {
         console.warn('No Claude data directories found');
@@ -344,8 +296,14 @@ export async function loadDailyConversationData(options?: LoadOptions & { debug?
         }
     }
 
-    // Filter by date range
-    const filteredEntries = filterByDateRange(allEntries, options?.since, options?.until);
+
+    const filteredEntries = (!options?.since && !options?.until) ? allEntries :
+        allEntries.filter(entry => {
+            const dateStr = formatDate(entry.timestamp).replace(/-/g, '');
+            if (options?.since && dateStr < options.since) return false;
+            if (options?.until && dateStr > options.until) return false;
+            return true;
+        });
 
     // Group by date
     const dailyGroups = new Map<DailyDate, Array<typeof filteredEntries[0]>>();

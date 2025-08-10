@@ -101,6 +101,7 @@ logs
 temp/
 tmp/
 .tmp/
+test-claude-data/
 
 # Test artifacts
 test-results/
