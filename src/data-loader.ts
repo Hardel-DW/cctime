@@ -248,7 +248,10 @@ function calculateConversationTime(entries: Array<{ timestamp: ISOTimestamp }>, 
     return `${hours}h ${minutes}m`;
 }
 
-export async function loadDailyConversationData(options?: LoadOptions & { debug?: boolean }): Promise<DailyConversation[]> {
+export async function loadDailyConversationData(options?: LoadOptions & { debug?: boolean }): Promise<{
+    conversations: DailyConversation[];
+    allEntries: Array<UsageData & { sessionId: SessionId; filePath: string }>;
+}> {
 
     const claudePaths = options?.claudePath ? [options.claudePath] : getClaudePaths();
     if (claudePaths.length === 0) {
@@ -256,7 +259,7 @@ export async function loadDailyConversationData(options?: LoadOptions & { debug?
         if (options?.debug) {
             console.log('Checked paths:', [DEFAULT_CLAUDE_CONFIG_PATH, DEFAULT_CLAUDE_CODE_PATH]);
         }
-        return [];
+        return { conversations: [], allEntries: [] };
     }
 
     if (options?.debug) {
@@ -271,7 +274,7 @@ export async function loadDailyConversationData(options?: LoadOptions & { debug?
             console.log('Searched pattern: **/*.jsonl');
             console.log('In directories:', claudePaths);
         }
-        return [];
+        return { conversations: [], allEntries: [] };
     }
 
     if (options?.debug) {
@@ -346,5 +349,8 @@ export async function loadDailyConversationData(options?: LoadOptions & { debug?
     // Sort by date descending (most recent first)
     dailyConversations.sort((a, b) => b.date.localeCompare(a.date));
 
-    return dailyConversations;
+    return {
+        conversations: dailyConversations,
+        allEntries: filteredEntries
+    };
 }

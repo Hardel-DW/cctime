@@ -26,8 +26,10 @@ describe('data-loader', () => {
 
     test('loadDailyConversationData with nonexistent path', async () => {
         const result = await loadDailyConversationData({ claudePath: '/nonexistent' });
-        expect(Array.isArray(result)).toBe(true);
-        expect(result).toHaveLength(0);
+        expect(result).toHaveProperty('conversations');
+        expect(result).toHaveProperty('allEntries');
+        expect(Array.isArray(result.conversations)).toBe(true);
+        expect(result.conversations).toHaveLength(0);
     });
 
     test('loadDailyConversationData with valid data', async () => {
@@ -44,16 +46,18 @@ describe('data-loader', () => {
         writeFileSync(join(sessionDir, 'conversation.jsonl'), jsonlContent);
 
         const result = await loadDailyConversationData({ claudePath: testDir });
-        expect(Array.isArray(result)).toBe(true);
-        expect(result.length).toBeGreaterThan(0);
+        expect(result).toHaveProperty('conversations');
+        expect(result).toHaveProperty('allEntries');
+        expect(Array.isArray(result.conversations)).toBe(true);
+        expect(result.conversations.length).toBeGreaterThan(0);
 
-        if (result.length > 0) {
-            expect(result[0]).toHaveProperty('date');
-            expect(result[0]).toHaveProperty('firstMessageTime');
-            expect(result[0]).toHaveProperty('lastMessageTime');
-            expect(result[0]).toHaveProperty('estimatedConversationTime');
-            expect(result[0]).toHaveProperty('messageCount');
-            expect(result[0]).toHaveProperty('sessionIds');
+        if (result.conversations.length > 0) {
+            expect(result.conversations[0]).toHaveProperty('date');
+            expect(result.conversations[0]).toHaveProperty('firstMessageTime');
+            expect(result.conversations[0]).toHaveProperty('lastMessageTime');
+            expect(result.conversations[0]).toHaveProperty('estimatedConversationTime');
+            expect(result.conversations[0]).toHaveProperty('messageCount');
+            expect(result.conversations[0]).toHaveProperty('sessionIds');
         }
     });
 
@@ -74,7 +78,8 @@ describe('data-loader', () => {
             until: '20250809'
         });
 
-        expect(Array.isArray(result)).toBe(true);
+        expect(result).toHaveProperty('conversations');
+        expect(Array.isArray(result.conversations)).toBe(true);
     });
 
     test('loadDailyConversationData handles invalid JSON', async () => {
@@ -85,7 +90,8 @@ describe('data-loader', () => {
         writeFileSync(join(sessionDir, 'usage.jsonl'), invalidJsonl);
 
         const result = await loadDailyConversationData({ claudePath: testDir });
-        expect(Array.isArray(result)).toBe(true);
+        expect(result).toHaveProperty('conversations');
+        expect(Array.isArray(result.conversations)).toBe(true);
     });
 
     test('loadDailyConversationData calculates session gaps', async () => {
@@ -103,11 +109,12 @@ describe('data-loader', () => {
         writeFileSync(join(sessionDir, 'conversation.jsonl'), jsonlContent);
 
         const result = await loadDailyConversationData({ claudePath: testDir });
-        expect(Array.isArray(result)).toBe(true);
+        expect(result).toHaveProperty('conversations');
+        expect(Array.isArray(result.conversations)).toBe(true);
 
-        if (result.length > 0) {
-            expect(result[0].messageCount).toBe(4);
-            expect(result[0].estimatedConversationTime).toBeTruthy();
+        if (result.conversations.length > 0) {
+            expect(result.conversations[0].messageCount).toBe(4);
+            expect(result.conversations[0].estimatedConversationTime).toBeTruthy();
         }
     });
 });

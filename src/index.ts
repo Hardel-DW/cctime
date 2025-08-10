@@ -17,14 +17,15 @@ import process from 'node:process';
 import pc from 'picocolors';
 import { loadDailyConversationData } from './data-loader.ts';
 import { createConversationTable, formatSummary } from './table-display.ts';
+import { generateHtmlReport } from './html-report.ts';
 import type { LoadOptions } from './types.ts';
 
 /**
  * Parse command line arguments
  */
-function parseArgs(): LoadOptions & { help?: boolean; debug?: boolean; days?: number } {
+function parseArgs(): LoadOptions & { help?: boolean; debug?: boolean; days?: number; html?: string } {
     const args = process.argv.slice(2);
-    const options: LoadOptions & { help?: boolean; debug?: boolean; days?: number } = {};
+    const options: LoadOptions & { help?: boolean; debug?: boolean; days?: number; html?: string } = {};
 
     for (let i = 0; i < args.length; i++) {
         const arg = args[i];
@@ -62,6 +63,11 @@ function parseArgs(): LoadOptions & { help?: boolean; debug?: boolean; days?: nu
                     options.days = daysValue;
                 }
                 break;
+            case '--html':
+                if (i + 1 < args.length) {
+                    options.html = args[++i];
+                }
+                break;
             default:
                 if (arg.startsWith('-')) {
                     console.error(pc.red(`Unknown option: ${arg}`));
@@ -88,6 +94,7 @@ ${pc.bold('OPTIONS:')}
   -h, --help              Show this help message
   --debug                 Show debug information about file discovery
   --days N                Show only the last N days (1-30, default: all)
+  --html FILE             Generate HTML report with charts (e.g. report.html)
   --since YYYYMMDD        Filter conversations since date (e.g. 20241201)  
   --until YYYYMMDD        Filter conversations until date (e.g. 20241231)
   --claude-path PATH      Custom path to Claude data directory
@@ -95,7 +102,7 @@ ${pc.bold('OPTIONS:')}
 ${pc.bold('EXAMPLES:')}
   cctime                           # Show all conversations
   cctime --days 7                  # Show last 7 days
-  cctime --days 30                 # Show last 30 days
+  cctime --html report.html        # Generate HTML report with charts
   cctime --since 20241201          # Show conversations since Dec 1st, 2024
   cctime --since 20241201 --until 20241231  # Show December 2024 conversations
   cctime --claude-path ~/.claude   # Use custom Claude data path
@@ -128,19 +135,24 @@ async function main(): Promise<void> {
     console.log('');
 
     try {
-        const allConversations = await loadDailyConversationData(options);
+        const { conversations: allConversations, allEntries } = await loadDailyConversationData(options);
 
-        // Limit to specified number of days if requested
         const conversations = options.days
             ? allConversations.slice(0, options.days)
             : allConversations;
 
-        const table = createConversationTable(conversations);
-        console.log(table);
-        console.log('');
+        if (options.html) {
+            await generateHtmlReport(conversations, allEntries, options.html);
+            console.log(pc.green(`✅ HTML report generated: ${options.html}`));
+            console.log(pc.cyan(`Open in browser: file://${process.cwd()}/${options.html}`));
+        } else {
+            const table = createConversationTable(conversations);
+            console.log(table);
+            console.log('');
 
-        const summary = formatSummary(conversations);
-        console.log(summary);
+            const summary = formatSummary(conversations);
+            console.log(summary);
+        }
 
     } catch (error) {
         console.error(pc.red('Error loading conversation data:'), error);

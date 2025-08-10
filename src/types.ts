@@ -34,6 +34,7 @@ export const createSessionId = (value: string): SessionId => sessionIdSchema.par
  */
 export const usageDataSchema = z.object({
     timestamp: isoTimestampSchema,
+    cwd: z.string().optional(),
     message: z.object({
         content: z.array(z.object({
             type: z.string().optional(),

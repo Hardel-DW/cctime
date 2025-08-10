@@ -1,0 +1,832 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>cctime - Claude Code Conversation Report</title>
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+    <style>
+        body { 
+            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif; 
+            max-width: 1200px; 
+            margin: 0 auto; 
+            padding: 20px; 
+            background: #f8fafc;
+        }
+        .header { 
+            background: white; 
+            padding: 20px; 
+            border-radius: 8px; 
+            box-shadow: 0 1px 3px rgba(0,0,0,0.1);
+            margin-bottom: 20px;
+        }
+        .stats { 
+            display: grid; 
+            grid-template-columns: repeat(auto-fit, minmax(200px, 1fr)); 
+            gap: 15px; 
+            margin: 20px 0; 
+        }
+        .stat-card { 
+            background: white; 
+            padding: 15px; 
+            border-radius: 8px; 
+            box-shadow: 0 1px 3px rgba(0,0,0,0.1);
+        }
+        .stat-value { 
+            font-size: 24px; 
+            font-weight: bold; 
+            color: #3b82f6; 
+        }
+        .stat-label { 
+            color: #6b7280; 
+            font-size: 14px; 
+        }
+        .chart-container { 
+            background: white; 
+            padding: 20px; 
+            border-radius: 8px; 
+            box-shadow: 0 1px 3px rgba(0,0,0,0.1);
+            margin: 20px 0; 
+        }
+        .chart-title { 
+            font-size: 18px; 
+            font-weight: bold; 
+            margin-bottom: 15px; 
+            color: #1f2937;
+        }
+        table { 
+            width: 100%; 
+            border-collapse: collapse; 
+            background: white; 
+            border-radius: 8px; 
+            overflow: hidden; 
+            box-shadow: 0 1px 3px rgba(0,0,0,0.1);
+        }
+        th, td { 
+            padding: 12px; 
+            text-align: left; 
+            border-bottom: 1px solid #e5e7eb; 
+        }
+        th { 
+            background: #f9fafb; 
+            font-weight: 600; 
+            color: #374151;
+        }
+        tr:hover { 
+            background: #f9fafb; 
+        }
+        .generated-time {
+            color: #6b7280;
+            font-size: 12px;
+            text-align: center;
+            margin-top: 20px;
+        }
+    </style>
+</head>
+<body>
+    <div class="header">
+        <h1>Claude Code - Time</h1>
+        <p>Analysis of your Claude Code conversation patterns and activity</p>
+    </div>
+
+    <div class="stats">
+        <div class="stat-card">
+            <div class="stat-value">26</div>
+            <div class="stat-label">Active Days</div>
+        </div>
+        <div class="stat-card">
+            <div class="stat-value">21 483</div>
+            <div class="stat-label">Total Messages</div>
+        </div>
+        <div class="stat-card">
+            <div class="stat-value">33</div>
+            <div class="stat-label">Total Sessions</div>
+        </div>
+        <div class="stat-card">
+            <div class="stat-value">826</div>
+            <div class="stat-label">Avg Messages/Day</div>
+        </div>
+        <div class="stat-card">
+            <div class="stat-value">42h 14m</div>
+            <div class="stat-label">Total Conv. Time</div>
+        </div>
+    </div>
+
+    <div class="chart-container">
+        <div class="chart-title">📈 Daily Message Activity</div>
+        <canvas id="dailyChart" width="400" height="150"></canvas>
+    </div>
+
+    <div class="chart-container">
+        <div class="chart-title">⏰ Hourly Activity Pattern</div>
+        <canvas id="hourlyChart" width="400" height="150"></canvas>
+    </div>
+
+    <div class="chart-container">
+        <div class="chart-title">📁 Conversation Time by Project</div>
+        <canvas id="projectChart" width="400" height="150"></canvas>
+    </div>
+
+    <div class="chart-container">
+        <div class="chart-title">📊 Daily Conversation Summary</div>
+        <table>
+            <thead>
+                <tr>
+                    <th>Date</th>
+                    <th>First Message</th>
+                    <th>Last Message</th>
+                    <th>Conv. Time</th>
+                    <th>Messages</th>
+                    <th>Sessions</th>
+                </tr>
+            </thead>
+            <tbody>
+                
+                    <tr>
+                        <td>2025-08-09</td>
+                        <td>07:06</td>
+                        <td>18:50</td>
+                        <td>1h 32m</td>
+                        <td>921</td>
+                        <td>3</td>
+                    </tr>
+                
+                    <tr>
+                        <td>2025-08-08</td>
+                        <td>21:29</td>
+                        <td>22:51</td>
+                        <td>1h</td>
+                        <td>533</td>
+                        <td>1</td>
+                    </tr>
+                
+                    <tr>
+                        <td>2025-08-07</td>
+                        <td>10:01</td>
+                        <td>12:18</td>
+                        <td>41m</td>
+                        <td>390</td>
+                        <td>1</td>
+                    </tr>
+                
+                    <tr>
+                        <td>2025-08-06</td>
+                        <td>02:17</td>
+                        <td>22:01</td>
+                        <td>2h 6m</td>
+                        <td>916</td>
+                        <td>2</td>
+                    </tr>
+                
+                    <tr>
+                        <td>2025-08-05</td>
+                        <td>01:52</td>
+                        <td>22:28</td>
+                        <td>4h 53m</td>
+                        <td>2 200</td>
+                        <td>2</td>
+                    </tr>
+                
+                    <tr>
+                        <td>2025-08-04</td>
+                        <td>02:14</td>
+                        <td>15:49</td>
+                        <td>43m</td>
+                        <td>254</td>
+                        <td>2</td>
+                    </tr>
+                
+                    <tr>
+                        <td>2025-08-03</td>
+                        <td>13:27</td>
+                        <td>15:59</td>
+                        <td>1h 35m</td>
+                        <td>513</td>
+                        <td>1</td>
+                    </tr>
+                
+                    <tr>
+                        <td>2025-08-02</td>
+                        <td>01:55</td>
+                        <td>09:37</td>
+                        <td>40m</td>
+                        <td>327</td>
+                        <td>1</td>
+                    </tr>
+                
+                    <tr>
+                        <td>2025-08-01</td>
+                        <td>02:35</td>
+                        <td>17:00</td>
+                        <td>2h 45m</td>
+                        <td>1 301</td>
+                        <td>1</td>
+                    </tr>
+                
+                    <tr>
+                        <td>2025-07-31</td>
+                        <td>01:56</td>
+                        <td>20:17</td>
+                        <td>3h 37m</td>
+                        <td>1 797</td>
+                        <td>1</td>
+                    </tr>
+                
+                    <tr>
+                        <td>2025-07-30</td>
+                        <td>03:22</td>
+                        <td>21:54</td>
+                        <td>2h 39m</td>
+                        <td>1 034</td>
+                        <td>2</td>
+                    </tr>
+                
+                    <tr>
+                        <td>2025-07-28</td>
+                        <td>07:28</td>
+                        <td>11:21</td>
+                        <td>41m</td>
+                        <td>279</td>
+                        <td>1</td>
+                    </tr>
+                
+                    <tr>
+                        <td>2025-07-27</td>
+                        <td>11:09</td>
+                        <td>14:12</td>
+                        <td>1h 16m</td>
+                        <td>539</td>
+                        <td>1</td>
+                    </tr>
+                
+                    <tr>
+                        <td>2025-07-26</td>
+                        <td>04:39</td>
+                        <td>18:39</td>
+                        <td>2h 34m</td>
+                        <td>1 322</td>
+                        <td>1</td>
+                    </tr>
+                
+                    <tr>
+                        <td>2025-07-25</td>
+                        <td>04:17</td>
+                        <td>19:40</td>
+                        <td>41m</td>
+                        <td>419</td>
+                        <td>1</td>
+                    </tr>
+                
+                    <tr>
+                        <td>2025-07-24</td>
+                        <td>06:13</td>
+                        <td>23:34</td>
+                        <td>1h 20m</td>
+                        <td>956</td>
+                        <td>1</td>
+                    </tr>
+                
+                    <tr>
+                        <td>2025-07-23</td>
+                        <td>03:10</td>
+                        <td>22:45</td>
+                        <td>1h 46m</td>
+                        <td>1 152</td>
+                        <td>1</td>
+                    </tr>
+                
+                    <tr>
+                        <td>2025-07-22</td>
+                        <td>00:06</td>
+                        <td>20:13</td>
+                        <td>3h 5m</td>
+                        <td>1 790</td>
+                        <td>1</td>
+                    </tr>
+                
+                    <tr>
+                        <td>2025-07-21</td>
+                        <td>00:38</td>
+                        <td>18:02</td>
+                        <td>46m</td>
+                        <td>447</td>
+                        <td>1</td>
+                    </tr>
+                
+                    <tr>
+                        <td>2025-07-20</td>
+                        <td>06:23</td>
+                        <td>22:46</td>
+                        <td>1h 15m</td>
+                        <td>599</td>
+                        <td>1</td>
+                    </tr>
+                
+                    <tr>
+                        <td>2025-07-19</td>
+                        <td>02:44</td>
+                        <td>19:50</td>
+                        <td>1h 36m</td>
+                        <td>783</td>
+                        <td>1</td>
+                    </tr>
+                
+                    <tr>
+                        <td>2025-07-18</td>
+                        <td>04:34</td>
+                        <td>06:43</td>
+                        <td>29m</td>
+                        <td>243</td>
+                        <td>1</td>
+                    </tr>
+                
+                    <tr>
+                        <td>2025-07-17</td>
+                        <td>00:01</td>
+                        <td>23:14</td>
+                        <td>1h 42m</td>
+                        <td>1 161</td>
+                        <td>1</td>
+                    </tr>
+                
+                    <tr>
+                        <td>2025-07-16</td>
+                        <td>02:27</td>
+                        <td>23:42</td>
+                        <td>1h 6m</td>
+                        <td>675</td>
+                        <td>1</td>
+                    </tr>
+                
+                    <tr>
+                        <td>2025-07-15</td>
+                        <td>00:33</td>
+                        <td>16:52</td>
+                        <td>1h 9m</td>
+                        <td>490</td>
+                        <td>1</td>
+                    </tr>
+                
+                    <tr>
+                        <td>2025-07-14</td>
+                        <td>16:15</td>
+                        <td>23:21</td>
+                        <td>37m</td>
+                        <td>442</td>
+                        <td>2</td>
+                    </tr>
+                
+            </tbody>
+        </table>
+        
+        <div style="margin-top: 15px; padding: 15px; background: #f9fafb; border-radius: 6px; font-size: 14px;">
+            <strong>📊 Summary:</strong> 
+            26 days • 
+            21 483 messages • 
+            33 sessions • 
+            42h 14m total time
+        </div>
+    </div>
+
+    <div class="chart-container">
+        <div class="chart-title">⏱️ Individual Sessions (Top 20)</div>
+        <table>
+            <thead>
+                <tr>
+                    <th>Start Time</th>
+                    <th>End Time</th>
+                    <th>Duration</th>
+                    <th>Messages</th>
+                    <th>Project</th>
+                </tr>
+            </thead>
+            <tbody>
+                
+                    <tr>
+                        <td>31/07/2025 02:21:02</td>
+                        <td>31/07/2025 03:16:26</td>
+                        <td>55m</td>
+                        <td>301</td>
+                        <td>C:\Users\Hardel\Desktop\repository\whispers_of_ether</td>
+                    </tr>
+                
+                    <tr>
+                        <td>06/08/2025 02:17:54</td>
+                        <td>06/08/2025 03:05:19</td>
+                        <td>47m</td>
+                        <td>310</td>
+                        <td>C:\Users\Hardel\Desktop\repository\whispers_of_ether</td>
+                    </tr>
+                
+                    <tr>
+                        <td>22/07/2025 01:45:08</td>
+                        <td>22/07/2025 02:27:50</td>
+                        <td>42m</td>
+                        <td>338</td>
+                        <td>C:\Users\Hardel\IdeaProjects\twichplay</td>
+                    </tr>
+                
+                    <tr>
+                        <td>01/08/2025 05:03:30</td>
+                        <td>01/08/2025 05:45:37</td>
+                        <td>42m</td>
+                        <td>207</td>
+                        <td>C:\Users\Hardel\Desktop\repository\whispers_of_ether</td>
+                    </tr>
+                
+                    <tr>
+                        <td>08/08/2025 22:02:16</td>
+                        <td>08/08/2025 22:44:38</td>
+                        <td>42m</td>
+                        <td>293</td>
+                        <td>C:\Users\Hardel\Desktop\repository\whispers_of_ether</td>
+                    </tr>
+                
+                    <tr>
+                        <td>26/07/2025 04:39:47</td>
+                        <td>26/07/2025 05:15:01</td>
+                        <td>35m</td>
+                        <td>286</td>
+                        <td>C:\Users\Hardel\IdeaProjects\twichplay</td>
+                    </tr>
+                
+                    <tr>
+                        <td>05/08/2025 17:00:17</td>
+                        <td>05/08/2025 17:35:29</td>
+                        <td>35m</td>
+                        <td>327</td>
+                        <td>C:\Users\Hardel\Desktop\repository\whispers_of_ether</td>
+                    </tr>
+                
+                    <tr>
+                        <td>05/08/2025 17:42:50</td>
+                        <td>05/08/2025 18:17:09</td>
+                        <td>34m</td>
+                        <td>188</td>
+                        <td>C:\Users\Hardel\Desktop\repository\whispers_of_ether</td>
+                    </tr>
+                
+                    <tr>
+                        <td>27/07/2025 11:09:51</td>
+                        <td>27/07/2025 11:42:54</td>
+                        <td>33m</td>
+                        <td>170</td>
+                        <td>C:\Users\Hardel\IdeaProjects\twichplay</td>
+                    </tr>
+                
+                    <tr>
+                        <td>06/08/2025 21:16:21</td>
+                        <td>06/08/2025 21:50:02</td>
+                        <td>33m</td>
+                        <td>231</td>
+                        <td>C:\Users\Hardel\Desktop\repository\twitchplay</td>
+                    </tr>
+                
+                    <tr>
+                        <td>30/07/2025 10:28:40</td>
+                        <td>30/07/2025 11:01:09</td>
+                        <td>32m</td>
+                        <td>122</td>
+                        <td>C:\Users\Hardel\Desktop\repository\whispers_of_ether</td>
+                    </tr>
+                
+                    <tr>
+                        <td>05/08/2025 08:17:59</td>
+                        <td>05/08/2025 08:49:56</td>
+                        <td>31m</td>
+                        <td>258</td>
+                        <td>C:\Users\Hardel\Desktop\repository\whispers_of_ether</td>
+                    </tr>
+                
+                    <tr>
+                        <td>09/08/2025 15:40:36</td>
+                        <td>09/08/2025 16:11:51</td>
+                        <td>31m</td>
+                        <td>305</td>
+                        <td>C:\Users\Hardel\Desktop\repository\whispers_of_ether</td>
+                    </tr>
+                
+                    <tr>
+                        <td>05/08/2025 08:52:59</td>
+                        <td>05/08/2025 09:22:29</td>
+                        <td>29m</td>
+                        <td>289</td>
+                        <td>C:\Users\Hardel\Desktop\repository\whispers_of_ether</td>
+                    </tr>
+                
+                    <tr>
+                        <td>31/07/2025 18:37:53</td>
+                        <td>31/07/2025 19:05:32</td>
+                        <td>27m</td>
+                        <td>247</td>
+                        <td>C:\Users\Hardel\Desktop\repository\whispers_of_ether</td>
+                    </tr>
+                
+                    <tr>
+                        <td>30/07/2025 04:00:26</td>
+                        <td>30/07/2025 04:24:56</td>
+                        <td>24m</td>
+                        <td>153</td>
+                        <td>C:\Users\Hardel\AppData\Roaming\ModrinthApp\profiles\Vanilla 1.21.6\saves\Custom Dims\datapacks\Yggdrasil-Dimensions</td>
+                    </tr>
+                
+                    <tr>
+                        <td>31/07/2025 07:36:47</td>
+                        <td>31/07/2025 08:00:18</td>
+                        <td>23m</td>
+                        <td>242</td>
+                        <td>C:\Users\Hardel\Desktop\repository\whispers_of_ether</td>
+                    </tr>
+                
+                    <tr>
+                        <td>03/08/2025 15:20:17</td>
+                        <td>03/08/2025 15:43:55</td>
+                        <td>23m</td>
+                        <td>87</td>
+                        <td>C:\Users\Hardel\Desktop\repository\twitchplay</td>
+                    </tr>
+                
+                    <tr>
+                        <td>01/08/2025 14:15:06</td>
+                        <td>01/08/2025 14:36:11</td>
+                        <td>21m</td>
+                        <td>195</td>
+                        <td>C:\Users\Hardel\Desktop\repository\whispers_of_ether</td>
+                    </tr>
+                
+                    <tr>
+                        <td>05/08/2025 02:23:43</td>
+                        <td>05/08/2025 02:44:03</td>
+                        <td>20m</td>
+                        <td>128</td>
+                        <td>C:\Users\Hardel\Desktop\repository\whispers_of_ether</td>
+                    </tr>
+                
+            </tbody>
+        </table>
+    </div>
+
+    <div class="chart-container">
+        <div class="chart-title">🤔 User Thinking Time (Gaps > 3min, Top 20)</div>
+        <table>
+            <thead>
+                <tr>
+                    <th>Timestamp</th>
+                    <th>Gap Duration</th>
+                    <th>Project</th>
+                </tr>
+            </thead>
+            <tbody>
+                
+                    <tr>
+                        <td>30/07/2025 03:22:36</td>
+                        <td>40h 0m</td>
+                        <td>C:\Users\Hardel\AppData\Roaming\ModrinthApp\profiles\Vanilla 1.21.6\saves\Custom Dims\datapacks\Yggdrasil-Dimensions</td>
+                    </tr>
+                
+                    <tr>
+                        <td>08/08/2025 21:29:50</td>
+                        <td>33h 11m</td>
+                        <td>C:\Users\Hardel\Desktop\repository\whispers_of_ether</td>
+                    </tr>
+                
+                    <tr>
+                        <td>03/08/2025 13:27:21</td>
+                        <td>27h 49m</td>
+                        <td>C:\Users\Hardel\Desktop\repository\twitchplay</td>
+                    </tr>
+                
+                    <tr>
+                        <td>19/07/2025 02:44:45</td>
+                        <td>20h 0m</td>
+                        <td>C:\Users\Hardel\IdeaProjects\twichplay</td>
+                    </tr>
+                
+                    <tr>
+                        <td>28/07/2025 07:28:56</td>
+                        <td>17h 16m</td>
+                        <td>C:\Users\Hardel\IdeaProjects\twichplay</td>
+                    </tr>
+                
+                    <tr>
+                        <td>06/08/2025 20:01:41</td>
+                        <td>16h 48m</td>
+                        <td>C:\Users\Hardel\Desktop\repository\twitchplay</td>
+                    </tr>
+                
+                    <tr>
+                        <td>27/07/2025 11:09:54</td>
+                        <td>16h 32m</td>
+                        <td>C:\Users\Hardel\IdeaProjects\twichplay</td>
+                    </tr>
+                
+                    <tr>
+                        <td>16/07/2025 23:03:42</td>
+                        <td>15h 46m</td>
+                        <td>C:\Users\Hardel\IdeaProjects\twichplay</td>
+                    </tr>
+                
+                    <tr>
+                        <td>21/07/2025 17:19:08</td>
+                        <td>13h 59m</td>
+                        <td>C:\Users\Hardel\IdeaProjects\twichplay</td>
+                    </tr>
+                
+                    <tr>
+                        <td>15/07/2025 15:07:38</td>
+                        <td>13h 12m</td>
+                        <td>C:\Users\Hardel\IdeaProjects\twichplay</td>
+                    </tr>
+                
+                    <tr>
+                        <td>24/07/2025 20:17:23</td>
+                        <td>12h 56m</td>
+                        <td>C:\Users\Hardel\IdeaProjects\twichplay</td>
+                    </tr>
+                
+                    <tr>
+                        <td>04/08/2025 04:30:58</td>
+                        <td>12h 31m</td>
+                        <td>C:\Users\Hardel\Downloads\mcseedcracker-main\mcseedcracker-main</td>
+                    </tr>
+                
+                    <tr>
+                        <td>25/07/2025 18:49:28</td>
+                        <td>12h 11m</td>
+                        <td>C:\Users\Hardel\IdeaProjects\twichplay</td>
+                    </tr>
+                
+                    <tr>
+                        <td>23/07/2025 20:32:48</td>
+                        <td>12h 7m</td>
+                        <td>C:\Users\Hardel\IdeaProjects\twichplay</td>
+                    </tr>
+                
+                    <tr>
+                        <td>07/08/2025 10:01:49</td>
+                        <td>12h 1m</td>
+                        <td>C:\Users\Hardel\Desktop\repository\twitchplay</td>
+                    </tr>
+                
+                    <tr>
+                        <td>20/07/2025 06:23:07</td>
+                        <td>10h 33m</td>
+                        <td>C:\Users\Hardel\IdeaProjects\twichplay</td>
+                    </tr>
+                
+                    <tr>
+                        <td>05/08/2025 01:52:02</td>
+                        <td>10h 2m</td>
+                        <td>C:\Users\Hardel\Desktop\repository\whispers_of_ether</td>
+                    </tr>
+                
+                    <tr>
+                        <td>19/07/2025 17:45:55</td>
+                        <td>9h 43m</td>
+                        <td>C:\Users\Hardel\IdeaProjects\twichplay</td>
+                    </tr>
+                
+                    <tr>
+                        <td>16/07/2025 02:27:53</td>
+                        <td>9h 36m</td>
+                        <td>C:\Users\Hardel\IdeaProjects\twichplay</td>
+                    </tr>
+                
+                    <tr>
+                        <td>17/07/2025 18:02:55</td>
+                        <td>9h 31m</td>
+                        <td>C:\Users\Hardel\IdeaProjects\twichplay</td>
+                    </tr>
+                
+            </tbody>
+        </table>
+    </div>
+
+    <div class="generated-time">
+        Generated on 10/08/2025 04:44:26 by cctime
+    </div>
+
+    <script>
+        const chartData = {"daily":{"labels":["2025-08-09","2025-08-08","2025-08-07","2025-08-06","2025-08-05","2025-08-04","2025-08-03","2025-08-02","2025-08-01","2025-07-31","2025-07-30","2025-07-28","2025-07-27","2025-07-26","2025-07-25","2025-07-24","2025-07-23","2025-07-22","2025-07-21","2025-07-20","2025-07-19","2025-07-18","2025-07-17","2025-07-16","2025-07-15","2025-07-14"],"messages":[921,533,390,916,2200,254,513,327,1301,1797,1034,279,539,1322,419,956,1152,1790,447,599,783,243,1161,675,490,442],"conversationMinutes":[92,60,41,126,293,43,95,40,165,217,159,41,76,154,41,80,106,185,46,75,96,29,102,66,69,37]},"hourly":{"labels":["00:00","01:00","02:00","03:00","04:00","05:00","06:00","07:00","08:00","09:00","10:00","11:00","12:00","13:00","14:00","15:00","16:00","17:00","18:00","19:00","20:00","21:00","22:00","23:00"],"messages":[0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0],"avgTime":[0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0]},"projects":{"labels":["C:\\Users\\Hardel\\IdeaProjects\\twichplay","C:\\Users\\Hardel\\Desktop\\repository\\whispers_of_ether","C:\\Users\\Hardel\\Desktop\\repository\\twitchplay","C:\\Users\\Hardel\\AppData\\Roaming\\ModrinthApp\\profiles\\Vanilla 1.21.6\\saves\\Custom Dims\\datapacks\\Yggdrasil-Dimensions","C:\\Users\\Hardel\\Downloads\\mcseedcracker-main\\mcseedcracker-main","\\\\wsl.localhost\\Ubuntu\\home\\hardel\\twichplay","C:\\Users\\Hardel"],"messages":[11280,7298,2494,270,123,17,1],"conversationMinutes":[1202,919,346,41,24,1,1]}};
+        const hourlyActivity = [{"hour":0,"messageCount":762,"conversationTime":0,"days":["Tue Jul 22 2025","Mon Jul 21 2025","Tue Jul 15 2025","Thu Jul 17 2025"]},{"hour":1,"messageCount":724,"conversationTime":0,"days":["Sat Aug 02 2025","Tue Aug 05 2025","Thu Jul 31 2025","Tue Jul 15 2025","Mon Jul 21 2025","Tue Jul 22 2025","Thu Jul 17 2025"]},{"hour":2,"messageCount":1792,"conversationTime":0,"days":["Mon Aug 04 2025","Sat Aug 02 2025","Tue Aug 05 2025","Wed Aug 06 2025","Fri Aug 01 2025","Thu Jul 31 2025","Mon Jul 21 2025","Tue Jul 22 2025","Sat Jul 19 2025","Thu Jul 17 2025","Wed Jul 16 2025"]},{"hour":3,"messageCount":1076,"conversationTime":0,"days":["Wed Jul 30 2025","Sat Aug 02 2025","Tue Aug 05 2025","Wed Aug 06 2025","Fri Aug 01 2025","Thu Jul 31 2025","Tue Jul 22 2025","Sat Jul 19 2025","Mon Jul 21 2025","Wed Jul 23 2025","Thu Jul 17 2025","Wed Jul 16 2025"]},{"hour":4,"messageCount":1181,"conversationTime":0,"days":["Wed Jul 30 2025","Tue Aug 05 2025","Fri Aug 01 2025","Thu Jul 31 2025","Mon Aug 04 2025","Sat Jul 26 2025","Sat Jul 19 2025","Fri Jul 18 2025","Fri Jul 25 2025","Wed Jul 23 2025"]},{"hour":5,"messageCount":1028,"conversationTime":0,"days":["Fri Aug 01 2025","Thu Jul 31 2025","Mon Aug 04 2025","Wed Jul 16 2025","Sat Jul 19 2025","Fri Jul 18 2025","Thu Jul 17 2025","Fri Jul 25 2025","Wed Jul 23 2025","Sat Jul 26 2025"]},{"hour":6,"messageCount":1033,"conversationTime":0,"days":["Thu Jul 31 2025","Sat Jul 19 2025","Thu Jul 24 2025","Wed Jul 16 2025","Sat Jul 26 2025","Thu Jul 17 2025","Fri Jul 18 2025","Tue Jul 22 2025","Fri Jul 25 2025","Wed Jul 23 2025","Sun Jul 20 2025"]},{"hour":7,"messageCount":2122,"conversationTime":0,"days":["Sat Aug 02 2025","Sat Aug 09 2025","Thu Jul 31 2025","Tue Aug 05 2025","Thu Jul 24 2025","Wed Jul 16 2025","Sat Jul 26 2025","Sat Jul 19 2025","Tue Jul 22 2025","Mon Jul 28 2025","Wed Jul 23 2025","Sun Jul 20 2025"]},{"hour":8,"messageCount":1231,"conversationTime":0,"days":["Sat Aug 02 2025","Thu Jul 31 2025","Tue Aug 05 2025","Mon Jul 28 2025","Thu Jul 17 2025","Tue Jul 22 2025","Wed Jul 23 2025","Sat Jul 19 2025","Sun Jul 20 2025"]},{"hour":9,"messageCount":817,"conversationTime":0,"days":["Sat Aug 02 2025","Tue Aug 05 2025","Thu Jul 31 2025","Tue Jul 22 2025","Sat Jul 26 2025"]},{"hour":10,"messageCount":654,"conversationTime":0,"days":["Thu Aug 07 2025","Wed Jul 30 2025","Mon Jul 28 2025","Sat Jul 26 2025"]},{"hour":11,"messageCount":713,"conversationTime":0,"days":["Thu Aug 07 2025","Wed Jul 30 2025","Sat Jul 26 2025","Sun Jul 27 2025","Mon Jul 28 2025"]},{"hour":12,"messageCount":648,"conversationTime":0,"days":["Mon Aug 04 2025","Thu Aug 07 2025","Wed Jul 30 2025","Sun Jul 27 2025","Sat Jul 26 2025"]},{"hour":13,"messageCount":210,"conversationTime":0,"days":["Mon Aug 04 2025","Sun Aug 03 2025","Fri Aug 01 2025"]},{"hour":14,"messageCount":621,"conversationTime":0,"days":["Sun Aug 03 2025","Sat Aug 09 2025","Fri Aug 01 2025","Sun Jul 27 2025"]},{"hour":15,"messageCount":1088,"conversationTime":0,"days":["Mon Aug 04 2025","Sun Aug 03 2025","Sat Aug 09 2025","Fri Aug 01 2025","Tue Jul 15 2025"]},{"hour":16,"messageCount":416,"conversationTime":0,"days":["Mon Jul 14 2025","Sat Aug 09 2025","Tue Aug 05 2025","Fri Aug 01 2025","Tue Jul 15 2025"]},{"hour":17,"messageCount":792,"conversationTime":0,"days":["Tue Aug 05 2025","Fri Aug 01 2025","Thu Jul 31 2025","Mon Jul 21 2025","Sat Jul 26 2025","Mon Jul 14 2025","Sat Jul 19 2025"]},{"hour":18,"messageCount":981,"conversationTime":0,"days":["Tue Aug 05 2025","Thu Jul 31 2025","Mon Jul 21 2025","Fri Jul 25 2025","Sun Jul 20 2025","Thu Jul 17 2025","Sat Jul 26 2025","Sat Jul 19 2025","Sat Aug 09 2025"]},{"hour":19,"messageCount":611,"conversationTime":0,"days":["Thu Jul 31 2025","Fri Jul 25 2025","Sat Jul 19 2025","Tue Jul 22 2025"]},{"hour":20,"messageCount":813,"conversationTime":0,"days":["Wed Aug 06 2025","Thu Jul 31 2025","Thu Jul 24 2025","Mon Jul 14 2025","Wed Jul 23 2025","Tue Jul 22 2025"]},{"hour":21,"messageCount":1370,"conversationTime":0,"days":["Wed Aug 06 2025","Tue Aug 05 2025","Wed Jul 30 2025","Fri Aug 08 2025","Mon Jul 14 2025","Thu Jul 17 2025","Thu Jul 24 2025","Wed Jul 23 2025"]},{"hour":22,"messageCount":558,"conversationTime":0,"days":["Tue Aug 05 2025","Wed Aug 06 2025","Fri Aug 08 2025","Wed Jul 23 2025","Sun Jul 20 2025","Mon Jul 14 2025","Thu Jul 17 2025","Thu Jul 24 2025"]},{"hour":23,"messageCount":242,"conversationTime":0,"days":["Wed Jul 16 2025","Thu Jul 17 2025","Mon Jul 14 2025","Thu Jul 24 2025"]}];
+        const projectActivity = [{"projectName":"C:\\Users\\Hardel\\IdeaProjects\\twichplay","messageCount":11280,"conversationTime":1202,"sessionCount":0},{"projectName":"C:\\Users\\Hardel\\Desktop\\repository\\whispers_of_ether","messageCount":7298,"conversationTime":919,"sessionCount":0},{"projectName":"C:\\Users\\Hardel\\Desktop\\repository\\twitchplay","messageCount":2494,"conversationTime":346,"sessionCount":0},{"projectName":"C:\\Users\\Hardel\\AppData\\Roaming\\ModrinthApp\\profiles\\Vanilla 1.21.6\\saves\\Custom Dims\\datapacks\\Yggdrasil-Dimensions","messageCount":270,"conversationTime":41,"sessionCount":0},{"projectName":"C:\\Users\\Hardel\\Downloads\\mcseedcracker-main\\mcseedcracker-main","messageCount":123,"conversationTime":24,"sessionCount":0},{"projectName":"\\\\wsl.localhost\\Ubuntu\\home\\hardel\\twichplay","messageCount":17,"conversationTime":1,"sessionCount":0},{"projectName":"C:\\Users\\Hardel","messageCount":1,"conversationTime":1,"sessionCount":0}];
+
+        // Daily Messages Chart
+        new Chart(document.getElementById('dailyChart'), {
+            type: 'line',
+            data: {
+                labels: chartData.daily.labels,
+                datasets: [
+                    {
+                        label: 'Messages',
+                        data: chartData.daily.messages,
+                        borderColor: '#3b82f6',
+                        backgroundColor: 'rgba(59, 130, 246, 0.1)',
+                        tension: 0.3,
+                        yAxisID: 'y'
+                    },
+                    {
+                        label: 'Conversation Time (minutes)',
+                        data: chartData.daily.conversationMinutes,
+                        borderColor: '#10b981',
+                        backgroundColor: 'rgba(16, 185, 129, 0.1)',
+                        tension: 0.3,
+                        yAxisID: 'y1'
+                    }
+                ]
+            },
+            options: {
+                responsive: true,
+                scales: {
+                    y: {
+                        type: 'linear',
+                        display: true,
+                        position: 'left',
+                        title: { display: true, text: 'Messages' }
+                    },
+                    y1: {
+                        type: 'linear',
+                        display: true,
+                        position: 'right',
+                        title: { display: true, text: 'Minutes' },
+                        grid: { drawOnChartArea: false }
+                    }
+                },
+                plugins: {
+                    legend: { display: true }
+                }
+            }
+        });
+
+        // Hourly Activity Chart
+        new Chart(document.getElementById('hourlyChart'), {
+            type: 'bar',
+            data: {
+                labels: hourlyActivity.map(h => h.hour + ':00'),
+                datasets: [{
+                    label: 'Messages per Hour',
+                    data: hourlyActivity.map(h => h.messageCount),
+                    backgroundColor: 'rgba(59, 130, 246, 0.6)',
+                    borderColor: '#3b82f6',
+                    borderWidth: 1
+                }]
+            },
+            options: {
+                responsive: true,
+                scales: {
+                    y: {
+                        beginAtZero: true,
+                        title: { display: true, text: 'Total Messages' }
+                    },
+                    x: {
+                        title: { display: true, text: 'Hour of Day' }
+                    }
+                },
+                plugins: {
+                    legend: { display: false }
+                }
+            }
+        });
+
+        // Project Activity Chart
+        new Chart(document.getElementById('projectChart'), {
+            type: 'doughnut',
+            data: {
+                labels: chartData.projects.labels,
+                datasets: [{
+                    label: 'Conversation Time (minutes)',
+                    data: chartData.projects.conversationMinutes,
+                    backgroundColor: [
+                        '#3b82f6', '#10b981', '#f59e0b', '#ef4444', '#8b5cf6',
+                        '#06b6d4', '#84cc16', '#f97316', '#ec4899', '#14b8a6'
+                    ],
+                    borderWidth: 2,
+                    borderColor: '#ffffff'
+                }]
+            },
+            options: {
+                responsive: true,
+                plugins: {
+                    legend: { 
+                        display: true,
+                        position: 'right'
+                    },
+                    tooltip: {
+                        callbacks: {
+                            label: function(context) {
+                                const minutes = context.parsed;
+                                const hours = Math.floor(minutes / 60);
+                                const mins = minutes % 60;
+                                const timeStr = hours > 0 ? 
+                                    (mins > 0 ? hours + 'h ' + mins + 'm' : hours + 'h') : 
+                                    minutes + 'm';
+                                return context.label + ': ' + timeStr;
+                            }
+                        }
+                    }
+                }
+            }
+        });
+    </script>
+</body>
+</html>
